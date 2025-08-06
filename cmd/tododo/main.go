@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/yuin/goldmark"
@@ -23,6 +24,14 @@ var (
 	bold   lipgloss.Style = lipgloss.NewStyle().Bold(true)
 	padded lipgloss.Style = lipgloss.NewStyle().Padding(2, 4)
 	faint  lipgloss.Style = lipgloss.NewStyle().Faint(true)
+	border lipgloss.Style = lipgloss.NewStyle().
+		BorderStyle(lipgloss.NormalBorder()).
+		BorderForeground(lipgloss.Color("240")).
+		BorderBottom(true).
+		BorderLeft(true).
+		BorderRight(true).
+		BorderTop(true).
+		Padding(1, 2, 1, 2)
 )
 
 type todo struct {
@@ -33,7 +42,7 @@ type todo struct {
 type model struct {
 	todos  []todo
 	cursor int
-	input  string
+	input  textinput.Model
 	adding bool
 	saving bool
 }
@@ -50,8 +59,14 @@ func initialModel() model {
 	if err != nil {
 		log.Fatal("failed to load todos:", err)
 	}
+	ti := textinput.New()
+	ti.Placeholder = "Whatcha want to do?"
+	ti.Focus()
+	ti.CharLimit = 500
+	ti.Width = 80
 	return model{
 		todos: todos,
+		input: ti,
 	}
 }
 
@@ -67,22 +82,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.adding {
 			switch msg.Type {
 			case tea.KeyEnter:
-				if strings.TrimSpace(m.input) != "" {
-					m.todos = append(m.todos, todo{task: m.input})
+				if strings.TrimSpace(m.input.Value()) != "" {
+					m.todos = append(m.todos, todo{task: m.input.Value()})
 				}
-				m.input = ""
+				m.input.SetValue("")
 				m.adding = false
 			case tea.KeyEsc:
-				m.input = ""
+				m.input.SetValue("")
 				m.adding = false
-			case tea.KeyBackspace:
-				if len(m.input) > 0 {
-					m.input = m.input[:len(m.input)-1]
-				}
 			default:
-				if msg.String() != "" && len(msg.String()) == 1 {
-					m.input += msg.String()
-				}
+				var cmd tea.Cmd
+				m.input, cmd = m.input.Update(msg)
+				return m, cmd
+
 			}
 			return m, nil
 		}
@@ -113,12 +125,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) View() string {
 	if m.adding {
-		msg := bold.Render("Add todo:")
+		msg := bold.Render("Add task:")
 
-		return padded.Render(fmt.Sprintf("%s %s\n\n(Enter to save, Esc to cancel)", msg, m.input))
+		return padded.Render(fmt.Sprintf("%s\n%s\n\n(Enter to save, Esc to cancel)", msg, border.Render(m.input.View())))
 	}
 	s := randomMessage()
 	s += "\n\n"
+	tasks := ""
+	if len(m.todos) == 0 {
+		tasks += "Yippee! No tasks to do..."
+	}
 	for i, t := range m.todos {
 		cursor := " " // no cursor
 		if m.cursor == i {
@@ -128,14 +144,16 @@ func (m model) View() string {
 		if t.checked {
 			checked = bold.Render("x")
 		}
-		s += fmt.Sprintf("%s [%s]: %s\n", cursor, checked, t.task)
+		tasks += fmt.Sprintf("%s [%s]: %s\n", cursor, checked, t.task)
 	}
 	if m.saving {
-		s += "\n Saving... \n"
+		tasks += "\n Saving... \n"
 	} else {
-		s += "\n\n"
+		tasks += "\n\n"
 	}
-	s += "\n↑/↓: Move  a: Add  <space>: Toggle  d: Delete  w: Write  q: Quit"
+
+	s += border.Render(tasks)
+	s += "\n\n↑/↓: Move  a: Add  <space>: Toggle  d: Delete  w: Write  q: Quit"
 	return padded.Render(s)
 }
 
