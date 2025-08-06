@@ -82,11 +82,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.adding {
 			switch msg.Type {
 			case tea.KeyEnter:
-				if strings.TrimSpace(m.input.Value()) != "" {
-					m.todos = append(m.todos, todo{task: m.input.Value()})
-				}
-				m.input.SetValue("")
 				m.adding = false
+				if strings.TrimSpace(m.input.Value()) == "" {
+					break
+				}
+				if m.cursor == -1 {
+					m.todos = append(m.todos, todo{task: m.input.Value()})
+					m.cursor = len(m.todos) - 1
+
+				} else {
+					m.todos[m.cursor].task = m.input.Value()
+				}
+
+				m.input.SetValue("")
 			case tea.KeyEsc:
 				m.input.SetValue("")
 				m.adding = false
@@ -108,6 +116,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.ModulateCursor(-1)
 		case "a":
 			m.adding = true
+			m.cursor = -1
+		case "e":
+			m.adding = true
+			m.input.SetValue(m.todos[m.cursor].task)
 		case "d":
 			m.RemoveTodoAtIndex(m.cursor)
 		case "w":
@@ -153,7 +165,7 @@ func (m model) View() string {
 	}
 
 	s += border.Render(tasks)
-	s += "\n\n↑/↓: Move  a: Add  <space>: Toggle  d: Delete  w: Write  q: Quit"
+	s += "\n\n↑/↓: Move  a: Add  <space>: Toggle  e: Edit  d: Delete  w: Write  q: Quit"
 	return padded.Render(s)
 }
 
@@ -259,11 +271,15 @@ func LoadTodosFromMarkdown() ([]todo, error) {
 
 func randomMessage() string {
 	randomMessages := []string{
-		"murr your motivation doesn't also need to be extinct",
-		"mrow I will love you until I go back to being a constellation",
-		"meow todolist?  more like able-list",
+		"your motivation doesn't also need to be extinct",
+		"todolist?  more like able-list",
 		"you just lost the game",
-		"meow cats are capable of judgement",
+		"does your task spark joy",
+		"no kings, only tasks",
+		"help I'm trapped in a todo list factory",
+		"don't forget to take breaks",
+		"hey, you can do this!",
+		"Tasks are like socks, they always seem to multiply",
 	}
 
 	// Get a random message from the list
