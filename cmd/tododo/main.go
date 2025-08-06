@@ -153,18 +153,22 @@ func (m model) View() string {
 			cursor = bold.Render(">")
 		}
 		checked := " " // not completed
+
+		taskText := t.task
 		if t.checked {
 			checked = bold.Render("x")
+			taskText = faint.Render(taskText)
 		}
-		tasks += fmt.Sprintf("%s [%s]: %s\n", cursor, checked, t.task)
+		tasks += fmt.Sprintf("%s [%s]: %s\n", cursor, checked, taskText)
 	}
+	s += border.Render(tasks)
+
 	if m.saving {
-		tasks += "\n Saving... \n"
+		s += "\n Saving... \n"
 	} else {
-		tasks += "\n\n"
+		s += "\n\n"
 	}
 
-	s += border.Render(tasks)
 	s += "\n\n↑/↓: Move  a: Add  <space>: Toggle  e: Edit  d: Delete  w: Write  q: Quit"
 	return padded.Render(s)
 }
@@ -274,19 +278,25 @@ func randomMessage() string {
 		"your motivation doesn't also need to be extinct",
 		"todolist?  more like able-list",
 		"you just lost the game",
+		"to task or not to task, that is the question",
+		"say hello to my little task",
 		"does your task spark joy",
 		"no kings, only tasks",
 		"help I'm trapped in a todo list factory",
 		"don't forget to take breaks",
+		"I'm afraid we're not in vim anymore Toto",
+		"frankly my dear, I don't give a task",
 		"hey, you can do this!",
-		"Tasks are like socks, they always seem to multiply",
+		"tasks are like socks, they always seem to multiply",
+		"the task really ties the list together",
+		"the tasks of mice and men",
 	}
 
 	// Get a random message from the list
 	idx := time.Now().Minute() % len(randomMessages)
 
 	banner := bold.Render("Tododo ≽^•⩊ •^≼")
-	s := fmt.Sprintf("%s\nBeni wisdom ~~%s~~", banner, randomMessages[idx])
+	s := fmt.Sprintf("%s\n~~%s~~", banner, randomMessages[idx])
 
 	return faint.Render(s)
 }
