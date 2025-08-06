@@ -17,7 +17,7 @@ import (
 	"github.com/yuin/goldmark/text"
 )
 
-const todoFileName = ".todos.md"
+const todoFileName = ".tododo.md"
 
 var (
 	bold   lipgloss.Style = lipgloss.NewStyle().Bold(true)
