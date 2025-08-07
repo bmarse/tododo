@@ -8,6 +8,14 @@ ToDoDo is a TUI todolist manager that should be extinct.  It was created because
 - Hide completed tasks
 - prettier and more fun than just using a plain old markdown file
 
+## Building
+This is a very complex project with lots complicated dependencies.
+```
+git clone git@github.com:bmarse/tododo.git
+cd tododo
+go build -o tododo cmd/tododo/main.go
+```
+
 ## Obligitory Screenshots
 Included are some screenshots of tododo running on [Ghostty](https://ghostty.org/) with [Nerd Fonts](https://www.nerdfonts.com/).
 
