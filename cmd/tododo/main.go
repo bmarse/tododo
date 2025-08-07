@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	tl "github.com/bmarse/tododo/pkg/todo"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -34,18 +35,11 @@ var (
 		Padding(1, 2, 1, 2)
 )
 
-type todo struct {
-	task    string
-	checked bool
-}
-
 type model struct {
-	todos  []todo
-	cursor int
+	todo   tl.Todo
 	input  textinput.Model
 	adding bool
 	saving bool
-	hidden bool
 }
 
 type tickMsg struct{}
@@ -56,7 +50,7 @@ func tickCmd() tea.Msg {
 }
 
 func initialModel() model {
-	todos, err := LoadTodosFromMarkdown()
+	todolist, err := LoadTodosFromMarkdown()
 	if err != nil {
 		log.Fatal("failed to load todos:", err)
 	}
@@ -66,7 +60,7 @@ func initialModel() model {
 	ti.CharLimit = 500
 	ti.Width = 80
 	return model{
-		todos: todos,
+		todo:  todolist,
 		input: ti,
 	}
 }
@@ -87,12 +81,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				if strings.TrimSpace(m.input.Value()) == "" {
 					break
 				}
-				if m.cursor == -1 {
-					m.todos = append(m.todos, todo{task: m.input.Value()})
-					m.cursor = len(m.todos) - 1
-
+				if m.todo.Cursor == -1 {
+					m.todo.AddTask(m.input.Value())
+					m.todo.Cursor = len(m.todo.Tasks) - 1
 				} else {
-					m.todos[m.cursor].task = m.input.Value()
+					m.todo.Tasks[m.todo.Cursor].UpdateText(m.input.Value())
 				}
 
 				m.input.SetValue("")
@@ -112,20 +105,20 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c", "q":
 			return m, tea.Quit
 		case "j", "down":
-			m.ModulateCursor(1)
+			m.todo.ModulateCursor(1)
 		case "k", "up":
-			m.ModulateCursor(-1)
+			m.todo.ModulateCursor(-1)
 		case "a":
 			m.adding = true
-			m.cursor = -1
+			m.todo.Cursor = -1
 		case "e":
 			m.adding = true
-			m.input.SetValue(m.todos[m.cursor].task)
+			m.input.SetValue(m.todo.Tasks[m.todo.Cursor].Text)
 		case "d":
-			m.RemoveTodoAtIndex(m.cursor)
+			m.todo.RemoveTodoAtIndex(m.todo.Cursor)
 		case "t":
-			m.cursor = 0
-			m.hidden = !m.hidden
+			m.todo.Cursor = 0
+			m.todo.ToggleHidden()
 		case "w":
 			m.saving = true
 			if err := m.SaveTodo(); err != nil {
@@ -133,8 +126,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			return m, tickCmd
 		case " ", "x":
-			m.todos[m.cursor].checked = !m.todos[m.cursor].checked
-			m.ModulateCursor(0)
+			m.todo.Tasks[m.todo.Cursor].ToggleChecked()
+			m.todo.ModulateCursor(0)
 		}
 	}
 	return m, nil
@@ -149,21 +142,21 @@ func (m model) View() string {
 	s := randomMessage()
 	s += "\n\n"
 	tasks := ""
-	if (m.GetRemainingTaskCount() == 0 && m.hidden) || len(m.todos) == 0 {
+	if (m.todo.GetRemainingTaskCount() == 0 && m.todo.Hidden) || len(m.todo.Tasks) == 0 {
 		tasks += "Yippee! No tasks to do..."
 	}
-	for i, t := range m.todos {
-		if m.hidden && t.checked {
+	for i, t := range m.todo.Tasks {
+		if m.todo.Hidden && t.Checked {
 			continue
 		}
 		cursor := " " // no cursor
-		if m.cursor == i {
+		if m.todo.Cursor == i {
 			cursor = bold.Render(">")
 		}
 		checked := " " // not completed
 
-		taskText := t.task
-		if t.checked {
+		taskText := t.Text
+		if t.Checked {
 			checked = bold.Render("x")
 			taskText = faint.Render(taskText)
 		}
@@ -181,84 +174,15 @@ func (m model) View() string {
 	return padded.Render(s)
 }
 
-func (m *model) RemoveTodoAtIndex(index int) {
-	if index < 0 || index >= len(m.todos) {
-		return
-	}
-
-	m.todos = append(m.todos[:index], m.todos[index+1:]...)
-}
-
-func (m *model) ModulateCursor(amount int) {
-	newPosition := m.cursor + amount
-	newPosition = m.ConvertToValidCursor(newPosition)
-	if amount < 0 {
-		amount = -1
-	} else {
-		amount = 1
-	}
-
-	if m.hidden && m.GetRemainingTaskCount() > 0 {
-		for i := 0; i < len(m.todos); i++ {
-			newPosition = m.ConvertToValidCursor(newPosition)
-			if !m.todos[newPosition].checked {
-				break
-			}
-			newPosition += amount
-		}
-	}
-
-	m.cursor = newPosition
-}
-
-func (m model) ConvertToValidCursor(index int) int {
-	if index < 0 {
-		for index < 0 {
-			index += len(m.todos)
-		}
-		return index
-	}
-
-	if index >= len(m.todos) {
-		return index % len(m.todos)
-	}
-
-	return index
-}
-
-func (m model) GetRemainingTaskCount() int {
-	count := 0
-	for _, t := range m.todos {
-		if !t.checked {
-			count++
-		}
-	}
-	return count
-}
-
-func (m model) GetTodos() []todo {
-	if m.hidden {
-		todos := make([]todo, 0, len(m.todos))
-		for _, t := range m.todos {
-			if !t.checked {
-				todos = append(todos, t)
-			}
-		}
-
-		return todos
-	}
-	return m.todos
-}
-
 func (m *model) SaveTodo() error {
 	// Save the current todo list to a file
 	b := []byte{}
-	for _, todo := range m.todos {
+	for _, t := range m.todo.Tasks {
 		check := " "
-		if todo.checked {
+		if t.Checked {
 			check = "X"
 		}
-		b = fmt.Appendf(b, "- [%s] %s\n", check, todo.task)
+		b = fmt.Appendf(b, "- [%s] %s\n", check, t.Text)
 	}
 
 	if len(b) > 0 {
@@ -271,23 +195,24 @@ func (m *model) SaveTodo() error {
 	return nil
 }
 
-func LoadTodosFromMarkdown() ([]todo, error) {
+func LoadTodosFromMarkdown() (tl.Todo, error) {
+	todolist := tl.Todo{
+		Tasks: []*tl.Task{},
+	}
+
 	markdownContent, err := os.ReadFile(todoFileName)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			return []todo{
-				{
-					task: "Add items to your todo list",
-				},
-			}, nil
+			todolist.Tasks = append(todolist.Tasks, &tl.Task{
+				Text: "Add items to your todo list",
+			})
 		}
-		return nil, err
+		return todolist, err
 	}
 
 	md := goldmark.New()
 	doc := md.Parser().Parse(text.NewReader(markdownContent))
 
-	var todos []todo
 	checkRegex := regexp.MustCompile(`^\s*\[[ xX]\]\s*`)
 
 	var walk func(n ast.Node)
@@ -306,11 +231,11 @@ func LoadTodosFromMarkdown() ([]todo, error) {
 				itemText = strings.TrimSpace(itemText[len(m):])
 			}
 			if itemText != "" {
-				todo := todo{
-					task:    itemText,
-					checked: checked,
+				task := &tl.Task{
+					Text:    itemText,
+					Checked: checked,
 				}
-				todos = append(todos, todo)
+				todolist.Tasks = append(todolist.Tasks, task)
 			}
 		}
 		for c := n.FirstChild(); c != nil; c = c.NextSibling() {
@@ -319,7 +244,7 @@ func LoadTodosFromMarkdown() ([]todo, error) {
 	}
 	walk(doc)
 
-	return todos, nil
+	return todolist, nil
 }
 
 func randomMessage() string {
