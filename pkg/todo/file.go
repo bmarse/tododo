@@ -1,0 +1,88 @@
+package todo
+
+import (
+	"bytes"
+	"errors"
+	"fmt"
+	"os"
+	"regexp"
+	"strings"
+
+	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/ast"
+	"github.com/yuin/goldmark/text"
+)
+
+const todoFileName = ".tododo.md"
+
+func SaveTodo(todo Todo) error {
+	b := []byte{}
+	for _, t := range todo.Tasks {
+		check := " "
+		if t.Checked {
+			check = "X"
+		}
+		b = fmt.Appendf(b, "- [%s] %s\n", check, t.Text)
+	}
+
+	if len(b) > 0 {
+		err := os.WriteFile(todoFileName, b, 0644)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func LoadTodosFromMarkdown() (Todo, error) {
+	todolist := Todo{
+		Tasks: []*Task{},
+	}
+
+	markdownContent, err := os.ReadFile(todoFileName)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			todolist.Tasks = append(todolist.Tasks, &Task{
+				Text: "Add items to your todo list",
+			})
+		}
+		return todolist, err
+	}
+
+	md := goldmark.New()
+	doc := md.Parser().Parse(text.NewReader(markdownContent))
+
+	checkRegex := regexp.MustCompile(`^\s*\[[ xX]\]\s*`)
+
+	var walk func(n ast.Node)
+	walk = func(n ast.Node) {
+		if n.Kind() == ast.KindListItem {
+			var buf bytes.Buffer
+			for c := n.FirstChild(); c != nil; c = c.NextSibling() {
+				if segmenter, ok := c.(interface{ Text(source []byte) []byte }); ok {
+					buf.Write(segmenter.Text(markdownContent))
+				}
+			}
+			itemText := strings.TrimSpace(buf.String())
+			checked := false
+			if m := checkRegex.FindString(itemText); m != "" {
+				checked = strings.HasPrefix(strings.ToLower(m), "[x]")
+				itemText = strings.TrimSpace(itemText[len(m):])
+			}
+			if itemText != "" {
+				task := &Task{
+					Text:    itemText,
+					Checked: checked,
+				}
+				todolist.Tasks = append(todolist.Tasks, task)
+			}
+		}
+		for c := n.FirstChild(); c != nil; c = c.NextSibling() {
+			walk(c)
+		}
+	}
+	walk(doc)
+
+	return todolist, nil
+}
