@@ -29,6 +29,9 @@ func (t *Todo) ModulateCursor(amount int) {
 		amount = 1
 	}
 
+	if t.Hidden && t.GetRemainingTaskCount() == 0 {
+		t.Cursor = -1
+	}
 	if t.Hidden && t.GetRemainingTaskCount() > 0 {
 		for i := 0; i < len(t.Tasks); i++ {
 			newPosition = t.ConvertToValidCursor(newPosition)

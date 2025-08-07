@@ -103,13 +103,16 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.Adding = true
 			m.Todo.Cursor = -1
 		case "e":
+			if m.Todo.Cursor == -1 {
+				return m, nil
+			}
 			m.Adding = true
 			m.Input.SetValue(m.Todo.Tasks[m.Todo.Cursor].Text)
 		case "d":
 			m.Todo.RemoveTodoAtIndex(m.Todo.Cursor)
 		case "t":
-			m.Todo.Cursor = 0
 			m.Todo.ToggleHidden()
+			m.Todo.ModulateCursor(0)
 		case "w":
 			m.Saving = true
 			if err := tl.SaveTodo(m.Todo); err != nil {
@@ -117,6 +120,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			return m, tickCmd
 		case " ", "x":
+			if m.Todo.Cursor == -1 {
+				return m, nil
+			}
 			m.Todo.Tasks[m.Todo.Cursor].ToggleChecked()
 			m.Todo.ModulateCursor(0)
 		}
