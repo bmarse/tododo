@@ -22,6 +22,8 @@ jobs:
             goos: windows
     steps:
       - uses: actions/checkout@v4
+      - name: Set APP_VERSION env
+        run: echo APP_VERSION=$(echo ${GITHUB_REF} | rev | cut -d'/' -f 1 | rev ) >> ${GITHUB_ENV}
       - uses: wangyoucao577/go-release-action@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -30,3 +32,5 @@ jobs:
           project_path: "./cmd/tododo"
           binary_name: "tododo"
           extra_files: LICENSE README.md
+          ldflags: -X "main.appVersion=${{ env.APP_VERSION }}"
+          build_flags: -v

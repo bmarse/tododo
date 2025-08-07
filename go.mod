@@ -6,6 +6,7 @@ require (
 	github.com/charmbracelet/bubbles v0.21.0
 	github.com/charmbracelet/bubbletea v1.3.6
 	github.com/charmbracelet/lipgloss v1.1.0
+	github.com/urfave/cli/v3 v3.3.8
 	github.com/yuin/goldmark v1.7.13
 )
 

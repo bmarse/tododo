@@ -6,9 +6,13 @@ import (
 	"time"
 
 	tl "github.com/bmarse/tododo/pkg/todo"
+	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
+
+var spinnerStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("69"))
 
 type tickMsg struct{}
 
@@ -43,49 +47,60 @@ func InitialModel() (*Model, error) {
 	ti.Focus()
 	ti.CharLimit = 500
 	ti.Width = 80
+
+	s := spinner.New()
+	s.Style = spinnerStyle
+	s.Spinner = spinner.MiniDot
+
 	return &Model{
-		Todo:  todolist,
-		Input: ti,
+		todo:    todolist,
+		input:   ti,
+		spinner: s,
 	}, nil
 }
 
 type Model struct {
-	Todo   tl.Todo
-	Input  textinput.Model
-	Adding bool
-	Saving bool
+	todo    tl.Todo
+	input   textinput.Model
+	spinner spinner.Model
+	adding  bool
+	saving  bool
 }
 
 func (m Model) Init() tea.Cmd {
-	return nil
+	return m.spinner.Tick
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tickMsg:
-		m.Saving = false
+		m.saving = false
+	case spinner.TickMsg:
+		var cmd tea.Cmd
+		m.spinner, cmd = m.spinner.Update(msg)
+		return m, cmd
 	case tea.KeyMsg:
-		if m.Adding {
+		if m.adding {
 			switch msg.Type {
 			case tea.KeyEnter:
-				m.Adding = false
-				if strings.TrimSpace(m.Input.Value()) == "" {
+				m.adding = false
+				if strings.TrimSpace(m.input.Value()) == "" {
 					break
 				}
-				if m.Todo.Cursor == -1 {
-					m.Todo.AddTask(m.Input.Value())
-					m.Todo.Cursor = len(m.Todo.Tasks) - 1
+				if m.todo.Cursor == -1 {
+					m.todo.AddTask(m.input.Value())
+					m.todo.Cursor = len(m.todo.Tasks) - 1
 				} else {
-					m.Todo.Tasks[m.Todo.Cursor].UpdateText(m.Input.Value())
+					m.todo.Tasks[m.todo.Cursor].UpdateText(m.input.Value())
 				}
 
-				m.Input.SetValue("")
+				m.input.SetValue("")
 			case tea.KeyEsc:
-				m.Input.SetValue("")
-				m.Adding = false
+				m.input.SetValue("")
+				m.adding = false
 			default:
 				var cmd tea.Cmd
-				m.Input, cmd = m.Input.Update(msg)
+				m.input, cmd = m.input.Update(msg)
 				return m, cmd
 
 			}
@@ -96,44 +111,44 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c", "q":
 			return m, tea.Quit
 		case "j", "down":
-			m.Todo.ModulateCursor(1)
+			m.todo.ModulateCursor(1)
 		case "k", "up":
-			m.Todo.ModulateCursor(-1)
+			m.todo.ModulateCursor(-1)
 		case "a":
-			m.Adding = true
-			m.Todo.Cursor = -1
+			m.adding = true
+			m.todo.Cursor = -1
 		case "e":
-			if m.Todo.Cursor == -1 {
+			if m.todo.Cursor == -1 {
 				return m, nil
 			}
-			m.Adding = true
-			m.Input.SetValue(m.Todo.Tasks[m.Todo.Cursor].Text)
+			m.adding = true
+			m.input.SetValue(m.todo.Tasks[m.todo.Cursor].Text)
 		case "d":
-			m.Todo.RemoveTodoAtIndex(m.Todo.Cursor)
+			m.todo.RemoveTodoAtIndex(m.todo.Cursor)
 		case "t":
-			m.Todo.ToggleHidden()
-			m.Todo.ModulateCursor(0)
+			m.todo.ToggleHidden()
+			m.todo.ModulateCursor(0)
 		case "w":
-			m.Saving = true
-			if err := tl.SaveTodo(m.Todo); err != nil {
+			m.saving = true
+			if err := tl.SaveTodo(m.todo); err != nil {
 				log.Fatal(err)
 			}
 			return m, tickCmd
 		case " ", "x":
-			if m.Todo.Cursor == -1 {
+			if m.todo.Cursor == -1 {
 				return m, nil
 			}
-			m.Todo.Tasks[m.Todo.Cursor].ToggleChecked()
-			m.Todo.ModulateCursor(0)
+			m.todo.Tasks[m.todo.Cursor].ToggleChecked()
+			m.todo.ModulateCursor(0)
 		}
 	}
 	return m, nil
 }
 
 func (m Model) View() string {
-	if m.Adding {
-		return AddingUI(m.Input.View())
+	if m.adding {
+		return AddingUI(m.input.View())
 	}
 
-	return MainUI(&m.Todo, m.Saving)
+	return MainUI(&m.todo, m.saving, m.spinner.View())
 }

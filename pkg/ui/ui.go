@@ -43,7 +43,7 @@ func MenuUI() string {
 	return "↑/↓: Move  a: Add  <space>: Complete  t: Toggle Hidden  e: Edit  d: Delete  w: Write  q: Quit"
 }
 
-func MainUI(todo *tl.Todo, saving bool) string {
+func MainUI(todo *tl.Todo, saving bool, spinner string) string {
 	s := randomMessage()
 	s += "\n\n"
 	tasks := ""
@@ -63,7 +63,7 @@ func MainUI(todo *tl.Todo, saving bool) string {
 	s += border.Render(tasks)
 
 	if saving {
-		s += "\n Saving... \n"
+		s += fmt.Sprintf("\n %s Saving... \n", spinner)
 	} else {
 		s += "\n\n"
 	}
