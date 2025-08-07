@@ -45,6 +45,7 @@ type model struct {
 	input  textinput.Model
 	adding bool
 	saving bool
+	hidden bool
 }
 
 type tickMsg struct{}
@@ -122,6 +123,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.input.SetValue(m.todos[m.cursor].task)
 		case "d":
 			m.RemoveTodoAtIndex(m.cursor)
+		case "t":
+			m.cursor = 0
+			m.hidden = !m.hidden
 		case "w":
 			m.saving = true
 			if err := m.SaveTodo(); err != nil {
@@ -130,6 +134,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tickCmd
 		case " ", "x":
 			m.todos[m.cursor].checked = !m.todos[m.cursor].checked
+			m.ModulateCursor(0)
 		}
 	}
 	return m, nil
@@ -144,10 +149,13 @@ func (m model) View() string {
 	s := randomMessage()
 	s += "\n\n"
 	tasks := ""
-	if len(m.todos) == 0 {
+	if (m.GetRemainingTaskCount() == 0 && m.hidden) || len(m.todos) == 0 {
 		tasks += "Yippee! No tasks to do..."
 	}
 	for i, t := range m.todos {
+		if m.hidden && t.checked {
+			continue
+		}
 		cursor := " " // no cursor
 		if m.cursor == i {
 			cursor = bold.Render(">")
@@ -169,7 +177,7 @@ func (m model) View() string {
 		s += "\n\n"
 	}
 
-	s += "\n\n↑/↓: Move  a: Add  <space>: Toggle  e: Edit  d: Delete  w: Write  q: Quit"
+	s += "\n\n↑/↓: Move  a: Add  <space>: Complete  t: Toggle Hidden  e: Edit  d: Delete  w: Write  q: Quit"
 	return padded.Render(s)
 }
 
@@ -182,23 +190,64 @@ func (m *model) RemoveTodoAtIndex(index int) {
 }
 
 func (m *model) ModulateCursor(amount int) {
-	if amount > 0 {
-		newPosition := m.cursor + amount
-		for newPosition >= len(m.todos) {
-			newPosition = newPosition % len(m.todos)
-		}
-
-		m.cursor = newPosition
-		return
+	newPosition := m.cursor + amount
+	newPosition = m.ConvertToValidCursor(newPosition)
+	if amount < 0 {
+		amount = -1
+	} else {
+		amount = 1
 	}
 
-	// the amount is negative
-	newPosition := m.cursor + amount
-	for newPosition < 0 {
-		newPosition += len(m.todos)
+	if m.hidden && m.GetRemainingTaskCount() > 0 {
+		for i := 0; i < len(m.todos); i++ {
+			newPosition = m.ConvertToValidCursor(newPosition)
+			if !m.todos[newPosition].checked {
+				break
+			}
+			newPosition += amount
+		}
 	}
 
 	m.cursor = newPosition
+}
+
+func (m model) ConvertToValidCursor(index int) int {
+	if index < 0 {
+		for index < 0 {
+			index += len(m.todos)
+		}
+		return index
+	}
+
+	if index >= len(m.todos) {
+		return index % len(m.todos)
+	}
+
+	return index
+}
+
+func (m model) GetRemainingTaskCount() int {
+	count := 0
+	for _, t := range m.todos {
+		if !t.checked {
+			count++
+		}
+	}
+	return count
+}
+
+func (m model) GetTodos() []todo {
+	if m.hidden {
+		todos := make([]todo, 0, len(m.todos))
+		for _, t := range m.todos {
+			if !t.checked {
+				todos = append(todos, t)
+			}
+		}
+
+		return todos
+	}
+	return m.todos
 }
 
 func (m *model) SaveTodo() error {
