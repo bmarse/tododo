@@ -46,6 +46,8 @@ func LoadTodosFromMarkdown() (Todo, error) {
 			todolist.Tasks = append(todolist.Tasks, &Task{
 				Text: "Add items to your todo list",
 			})
+
+			return todolist, nil
 		}
 		return todolist, err
 	}
