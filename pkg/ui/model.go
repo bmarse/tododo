@@ -9,10 +9,7 @@ import (
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 )
-
-var spinnerStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("69"))
 
 type tickMsg struct{}
 
@@ -49,7 +46,6 @@ func InitialModel() (*Model, error) {
 	ti.Width = 80
 
 	s := spinner.New()
-	s.Style = spinnerStyle
 	s.Spinner = spinner.MiniDot
 
 	return &Model{

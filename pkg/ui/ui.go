@@ -10,17 +10,18 @@ import (
 )
 
 var (
-	bold   lipgloss.Style = lipgloss.NewStyle().Bold(true)
-	padded lipgloss.Style = lipgloss.NewStyle().Padding(2, 4)
-	faint  lipgloss.Style = lipgloss.NewStyle().Faint(true)
-	border lipgloss.Style = lipgloss.NewStyle().
-		BorderStyle(lipgloss.NormalBorder()).
-		BorderForeground(lipgloss.Color("240")).
-		BorderBottom(true).
-		BorderLeft(true).
-		BorderRight(true).
-		BorderTop(true).
-		Padding(1, 2, 1, 2)
+	spinnerStyle lipgloss.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("69"))
+	bold         lipgloss.Style = lipgloss.NewStyle().Bold(true)
+	padded       lipgloss.Style = lipgloss.NewStyle().Padding(2, 4)
+	faint        lipgloss.Style = lipgloss.NewStyle().Faint(true)
+	border       lipgloss.Style = lipgloss.NewStyle().
+			BorderStyle(lipgloss.NormalBorder()).
+			BorderForeground(lipgloss.Color("240")).
+			BorderBottom(true).
+			BorderLeft(true).
+			BorderRight(true).
+			BorderTop(true).
+			Padding(1, 2, 1, 2)
 )
 
 func AddingUI(inputView string) string {
@@ -63,7 +64,7 @@ func MainUI(todo *tl.Todo, saving bool, spinner string) string {
 	s += border.Render(tasks)
 
 	if saving {
-		s += fmt.Sprintf("\n %s Saving... \n", spinner)
+		s += fmt.Sprintf("\n %s Saving... \n", spinnerStyle.Render(spinner))
 	} else {
 		s += "\n\n"
 	}
