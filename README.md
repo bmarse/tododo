@@ -1,6 +1,8 @@
 # ToDoDo
 ToDoDo is a TUI todolist manager that should be extinct.  It was created because I was too lazy to google for a good TUI todolist that didn't require an account or database.
 
+![todo-in-action](https://github.com/user-attachments/assets/78d01768-acc1-47d6-8f67-761b434912e6)
+
 ## Features
 - Keyboard based
 - Write to file (`.tododo.md`)
