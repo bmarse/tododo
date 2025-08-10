@@ -1,5 +1,7 @@
 # ToDoDo
-ToDoDo is a TUI todolist manager that should be extinct.  It was created because I was too lazy to google for a good TUI todolist that didn't require an account or database.
+Tododo is a TUI todo manager that should be extinct.  It was created because I was too lazy to research for a good TUI todolist that didn't require an account or database.
+
+Tododo uses a markdown file to store its todo data and is meant to be very barebones.  By default it uses `.tododo.md` but you can supply any filename you desire.  The keybindings are easy to use and always in view if you forget(See screenshots below).
 
 ![todo-in-action](https://github.com/user-attachments/assets/78d01768-acc1-47d6-8f67-761b434912e6)
 
