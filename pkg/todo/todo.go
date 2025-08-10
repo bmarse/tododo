@@ -3,9 +3,10 @@ package todo
 
 // Todo represents a collection of tasks that can be managed.
 type Todo struct {
-	Tasks  []*Task
-	Cursor int
-	Hidden bool
+	Tasks    []*Task
+	Cursor   int
+	Hidden   bool
+	Filename string
 }
 
 func (t *Todo) ToggleHidden() {

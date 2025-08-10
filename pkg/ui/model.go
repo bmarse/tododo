@@ -19,8 +19,8 @@ func tickCmd() tea.Msg {
 }
 
 // Run is a blocking function that starts bubbletea.
-func Run() error {
-	m, err := InitialModel()
+func Run(todoFilename string) error {
+	m, err := InitialModel(todoFilename)
 	if err != nil {
 		return err
 	}
@@ -34,8 +34,8 @@ func Run() error {
 }
 
 // InitialModel initializes the bubbletea model with the initial state of the todo list.
-func InitialModel() (*Model, error) {
-	todolist, err := tl.LoadTodosFromMarkdown()
+func InitialModel(todoFilename string) (*Model, error) {
+	todolist, err := tl.LoadTodosFromMarkdown(todoFilename)
 	if err != nil {
 		return nil, err
 	}
