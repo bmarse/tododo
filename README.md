@@ -3,12 +3,22 @@ ToDoDo is a TUI todolist manager that should be extinct.  It was created because
 
 ![todo-in-action](https://github.com/user-attachments/assets/78d01768-acc1-47d6-8f67-761b434912e6)
 
+
 ## Features
 - Keyboard based
 - Write to file (`.tododo.md`)
 - Create/Toggle Complete/Edit/Delete tasks
 - Hide completed tasks
 - prettier and more fun than just using a plain old markdown file
+
+
+## Usage
+```bash
+tododo  # open up tododo and read/write default file .tododo.md
+tododo ~/my-file.md  # Open up tododo with the file ~/my-file.md
+tododo --help  # Help
+tododo --version # Get the version, needed for opening issues
+```
 
 ## Building
 This is a very complex project with lots complicated dependencies.
@@ -17,6 +27,7 @@ git clone git@github.com:bmarse/tododo.git
 cd tododo
 go build -o tododo cmd/tododo/main.go
 ```
+
 
 ## Obligitory Screenshots
 Included are some screenshots of tododo running on [Ghostty](https://ghostty.org/) with [Nerd Fonts](https://www.nerdfonts.com/).
