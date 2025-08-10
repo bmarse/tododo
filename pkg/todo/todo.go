@@ -13,7 +13,7 @@ func (t *Todo) ToggleHidden() {
 	t.Hidden = !t.Hidden
 }
 
-func (t *Todo) RemoveTodoAtIndex(index int) {
+func (t *Todo) RemoveTask(index int) {
 	if index < 0 || index >= len(t.Tasks) {
 		return
 	}
@@ -32,6 +32,7 @@ func (t *Todo) ModulateCursor(amount int) {
 
 	if t.Hidden && t.GetRemainingTaskCount() == 0 {
 		t.Cursor = -1
+		return
 	}
 	if t.Hidden && t.GetRemainingTaskCount() > 0 {
 		for i := 0; i < len(t.Tasks); i++ {

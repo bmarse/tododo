@@ -120,7 +120,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.adding = true
 			m.input.SetValue(m.todo.Tasks[m.todo.Cursor].Text)
 		case "d":
-			m.todo.RemoveTodoAtIndex(m.todo.Cursor)
+			m.todo.RemoveTask(m.todo.Cursor)
 		case "t":
 			m.todo.ToggleHidden()
 			m.todo.ModulateCursor(0)
