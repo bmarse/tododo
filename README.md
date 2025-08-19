@@ -27,7 +27,7 @@ This is a very complex project with lots complicated dependencies.
 ```
 git clone git@github.com:bmarse/tododo.git
 cd tododo
-go build -o tododo cmd/tododo/main.go
+go build -o tododo tododo.go
 ```
 
 
