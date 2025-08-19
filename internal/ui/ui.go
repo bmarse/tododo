@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	tl "github.com/bmarse/tododo/pkg/todo"
+	tl "github.com/bmarse/tododo/internal/todo"
 	"github.com/charmbracelet/lipgloss"
 )
 

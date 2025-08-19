@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/bmarse/tododo/pkg/ui"
+	"github.com/bmarse/tododo/internal/ui"
 	"github.com/urfave/cli/v3"
 )
 

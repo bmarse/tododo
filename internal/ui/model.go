@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	tl "github.com/bmarse/tododo/pkg/todo"
+	tl "github.com/bmarse/tododo/internal/todo"
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
