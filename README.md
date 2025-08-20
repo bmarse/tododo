@@ -13,6 +13,11 @@ Tododo uses a markdown file to store its todo data and is meant to be very bareb
 - Hide completed tasks
 - prettier and more fun than just using a plain old markdown file
 
+## Brew Install
+```
+brew tap bmarse/tododo
+brew install tododo
+```
 
 ## Usage
 ```bash
@@ -22,7 +27,7 @@ tododo --help  # Help
 tododo --version # Get the version, needed for opening issues
 ```
 
-## Building
+## Building with Go
 This is a very complex project with lots complicated dependencies.
 ```
 git clone git@github.com:bmarse/tododo.git
@@ -30,7 +35,7 @@ cd tododo
 go build -o tododo tododo.go
 ```
 
-## Installation
+## Installation with Go
 Very complex installation process:
 ```
 go install github.com/bmarse/tododo@latest
