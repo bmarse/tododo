@@ -30,8 +30,13 @@ cd tododo
 go build -o tododo tododo.go
 ```
 
+## Installation
+Very complex installation process:
+```
+go install github.com/bmarse/tododo@latest
+```
 
-## Obligitory Screenshots
+## Obligatory Screenshots
 Included are some screenshots of tododo running on [Ghostty](https://ghostty.org/) with [Nerd Fonts](https://www.nerdfonts.com/).
 
 ### Main TUI
