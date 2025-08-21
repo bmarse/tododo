@@ -3,6 +3,7 @@ package ui
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	tl "github.com/bmarse/tododo/internal/todo"
@@ -95,9 +96,14 @@ func randomMessage() string {
 
 	// Get a random message from the list
 	idx := time.Now().Minute() % len(randomMessages)
+	dodo := []string{
+		" ..   Tododo",
+		", Õ   " + randomMessages[idx],
+		" //_---_ ",
+		" \\  V   )",
+		"  ------",
+	}
+	banner := bold.Render(strings.Join(dodo, "\n"))
 
-	banner := bold.Render("Tododo ≽^•⩊ •^≼")
-	s := fmt.Sprintf("%s\n~~%s~~", banner, randomMessages[idx])
-
-	return faint.Render(s)
+	return faint.Render(banner)
 }
