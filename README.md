@@ -3,8 +3,7 @@ Tododo is a TUI todo manager that should be extinct.  It was created because I w
 
 Tododo uses a markdown file to store its todo data and is meant to be very barebones.  By default it uses `.tododo.md` but you can supply any filename you desire.  The keybindings are easy to use and always in view if you forget(See screenshots below).
 
-![todo-in-action](https://github.com/user-attachments/assets/78d01768-acc1-47d6-8f67-761b434912e6)
-
+![tododo](https://github.com/user-attachments/assets/fa484b9e-62d6-41c5-ac2a-1f5b390a427b)
 
 ## Features
 - Keyboard based
@@ -45,7 +44,7 @@ go install github.com/bmarse/tododo@latest
 Included are some screenshots of tododo running on [Ghostty](https://ghostty.org/) with [Nerd Fonts](https://www.nerdfonts.com/).
 
 ### Main TUI
-<img width="856" height="454" alt="tododo" src="https://github.com/user-attachments/assets/783d0a67-8199-4b96-947d-ee48cc1fe050" />
+<img width="912" height="657" alt="mainTUI" src="https://github.com/user-attachments/assets/3e5c1b12-95f8-4c10-b855-eee8ae3f3219" />
 
 ### Adding/editing Task TUI
-<img width="854" height="455" alt="tododo-add-task" src="https://github.com/user-attachments/assets/37643d40-2aeb-4ae1-9d49-abe8694af181" />
+<img width="912" height="657" alt="MainTUI-edit" src="https://github.com/user-attachments/assets/49a1ccfc-6ab6-4044-8f88-12cba4a8f89b" />
