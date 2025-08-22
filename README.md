@@ -14,8 +14,11 @@ Tododo uses a markdown file to store its todo data and is meant to be very bareb
 
 ## Brew Install
 ```
-brew tap bmarse/tododo
-brew install tododo
+# Install
+brew install bmarse/tododo/tododo
+
+# Upgrade
+brew upgrade bmarse/tododo/tododo
 ```
 
 ## Usage
