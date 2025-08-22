@@ -10,7 +10,18 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+var rainbowColors = []string{
+	"#ffadad", // Red
+	"#ffd6a5", // Orange
+	"#fdffb6", // Yellow
+	"#caffbf", // Green
+	"#9bf6ff", // Blue
+	"#a0c4ff", // Indigo
+	"#bdb2ff", // Violet
+}
+
 var (
+	standard     lipgloss.Style = lipgloss.NewStyle()
 	spinnerStyle lipgloss.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("69"))
 	bold         lipgloss.Style = lipgloss.NewStyle().Bold(true)
 	padded       lipgloss.Style = lipgloss.NewStyle().Padding(2, 4)
@@ -35,10 +46,11 @@ func TaskUI(t *tl.Task, cursor string) string {
 
 	taskText := t.Text
 	if t.Checked {
-		checked = bold.Render("x")
+		checked = "x"
 		taskText = faint.Render(taskText)
 	}
-	return fmt.Sprintf("%s [%s]: %s\n", cursor, checked, taskText)
+	checkbox := standard.Render(fmt.Sprintf("[%s]:", checked))
+	return fmt.Sprintf("%s %s %s\n", cursor, checkbox, taskText)
 }
 
 func MenuUI() string {
@@ -73,6 +85,20 @@ func MainUI(todo *tl.Todo, saving bool, spinner string) string {
 	s += "\n\n"
 	s += MenuUI()
 	return padded.Render(s)
+}
+
+func updateColors(dancing bool, index int) {
+	if dancing {
+		border = border.Foreground(lipgloss.Color(rainbowColors[index]))
+		bold = bold.Foreground(lipgloss.Color(rainbowColors[index]))
+		faint = faint.Foreground(lipgloss.Color(rainbowColors[index]))
+		standard = standard.Foreground(lipgloss.Color(rainbowColors[index]))
+	} else {
+		border = border.Foreground(lipgloss.Color(""))
+		bold = bold.Foreground(lipgloss.Color(""))
+		faint = faint.Foreground(lipgloss.Color(""))
+		standard = standard.Foreground(lipgloss.Color(""))
+	}
 }
 
 func randomMessage() string {

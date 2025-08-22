@@ -56,11 +56,13 @@ func InitialModel(todoFilename string) (*Model, error) {
 }
 
 type Model struct {
-	todo    tl.Todo
-	input   textinput.Model
-	spinner spinner.Model
-	adding  bool
-	saving  bool
+	todo       tl.Todo
+	input      textinput.Model
+	spinner    spinner.Model
+	adding     bool
+	saving     bool
+	danceParty bool
+	colorIndex int
 }
 
 func (m Model) Init() tea.Cmd {
@@ -73,6 +75,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.saving = false
 	case spinner.TickMsg:
 		var cmd tea.Cmd
+		m.colorIndex = (m.colorIndex + 1) % len(rainbowColors)
+		updateColors(m.danceParty, m.colorIndex)
 		m.spinner, cmd = m.spinner.Update(msg)
 		return m, cmd
 	case tea.KeyMsg:
@@ -136,6 +140,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			m.todo.Tasks[m.todo.Cursor].ToggleChecked()
 			m.todo.ModulateCursor(0)
+		case "/":
+			m.danceParty = !m.danceParty
 		}
 	}
 	return m, nil
@@ -146,5 +152,9 @@ func (m Model) View() string {
 		return AddingUI(m.input.View())
 	}
 
-	return MainUI(&m.todo, m.saving, m.spinner.View())
+	s := ""
+	if m.danceParty {
+		s = standard.Render("               ✯•´*¨`*•✿ Dance Party ✿•*`¨*•✯\n")
+	}
+	return s + MainUI(&m.todo, m.saving, m.spinner.View())
 }
