@@ -11,6 +11,8 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+var windowWidth = 80
+
 type tickMsg struct{}
 
 func tickCmd() tea.Msg {
@@ -73,6 +75,8 @@ func (m Model) Init() tea.Cmd {
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		windowWidth = msg.Width
 	case tickMsg:
 		m.saving = false
 	case spinner.TickMsg:

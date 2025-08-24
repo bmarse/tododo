@@ -55,17 +55,26 @@ func TaskUI(t *tl.Task, cursor string) string {
 
 func MenuUI(hideCommandMenu bool) string {
 	if hideCommandMenu {
-		return faint.Render("Press '?'")
+		return faint.Render("Press '?' to toggle command menu...")
 	}
-
-	menu := "↑/↓: Move  a: Add  <space>: Complete n/m: Reposition\n"
-	menu += "w: Write  e: Edit  d: Delete \n"
-	menu += "t: Toggle Hidden  q: Quit  ?: Hide Menu"
-	return faint.Render(menu)
+	menu := strings.Builder{}
+	lineLength := 0
+	for k := range GetKeys() {
+		menuAppend := fmt.Sprintf("%s: %s | ", bold.Render(GetKeys()[k].Key), faint.Render(GetKeys()[k].Title))
+		lineLength += len(menuAppend)
+		if lineLength > windowWidth-5 {
+			// remove last " | "
+			menuAppend = strings.TrimSuffix(menuAppend, " | ")
+			menuAppend += "\n"
+			lineLength = 0
+		}
+		menu.WriteString(menuAppend)
+	}
+	return strings.TrimSuffix(menu.String(), " | ")
 }
 
 func MainUI(todo *tl.Todo, saving bool, spinner string, hideCommandMenu bool) string {
-	s := randomMessage()
+	s := RandomMessage()
 	s += "\n\n"
 	tasks := ""
 	if (todo.GetRemainingTaskCount() == 0 && todo.Hidden) || len(todo.Tasks) == 0 {
@@ -108,7 +117,20 @@ func updateColors(dancing bool, index int) {
 	}
 }
 
-func randomMessage() string {
+func GetKeyHelp() string {
+	s := strings.Builder{}
+	s.WriteString("KEY COMMANDS:\n")
+	for _, k := range GetKeys() {
+		a := ""
+		if k.AliasKey != "" {
+			a = fmt.Sprintf(" (%s)", bold.Render(k.AliasKey))
+		}
+		s.WriteString(fmt.Sprintf("    %s%s: %s\n", bold.Render(k.Key), faint.Render(a), k.Description))
+	}
+	return s.String()
+}
+
+func RandomMessage() string {
 	randomMessages := []string{
 		"your motivation doesn't also need to be extinct",
 		"todolist?  more like able-list",

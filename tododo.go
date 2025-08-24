@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 
@@ -13,6 +14,7 @@ var appVersion = "development" // This will be replaced by the build system with
 
 func main() {
 	var todoFilename string
+	cli.RootCommandHelpTemplate = fmt.Sprintf("%s\n\n%s\n%s", ui.RandomMessage(), cli.RootCommandHelpTemplate, ui.GetKeyHelp())
 	app := &cli.Command{
 		Name:      "tododo",
 		Usage:     "The todo manager that should be extinct",
