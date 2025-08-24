@@ -22,7 +22,7 @@ func GetKeys() []KeyCommand {
 			"Add a new task to your todo list",
 		},
 		{
-			"space",
+			"<space>",
 			"x",
 			"Toggle Complete",
 			"Mark the selected task as completed or not completed",
@@ -41,7 +41,7 @@ func GetKeys() []KeyCommand {
 		},
 		{
 			"w",
-			"",
+			"ctrl+s",
 			"Write to file",
 			"Save your current todo list to the provided file",
 		},

@@ -114,37 +114,37 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 		switch msg.String() {
-		case "ctrl+c", "q":
+		case "ctrl+c", "q", "Q":
 			return m, tea.Quit
-		case "j", "down":
+		case "j", "J", "down":
 			m.todo.ModulateCursor(1)
-		case "k", "up":
+		case "k", "K", "up":
 			m.todo.ModulateCursor(-1)
-		case "a":
+		case "a", "A":
 			m.adding = true
 			m.todo.Cursor = -1
-		case "e":
+		case "e", "E":
 			if m.todo.Cursor == -1 {
 				return m, nil
 			}
 			m.adding = true
 			m.input.SetValue(m.todo.Tasks[m.todo.Cursor].Text)
-		case "d":
+		case "d", "D":
 			m.todo.RemoveTask(m.todo.Cursor)
-		case "t":
+		case "t", "T":
 			m.todo.ToggleHidden()
 			m.todo.ModulateCursor(0)
-		case "n":
+		case "n", "N":
 			m.todo.Move(true)
-		case "m":
+		case "m", "M":
 			m.todo.Move(false)
-		case "w":
+		case "w", "W", "ctrl+s":
 			m.saving = true
 			if err := tl.SaveTodo(m.todo); err != nil {
 				log.Fatal(err)
 			}
 			return m, tickCmd
-		case " ", "x":
+		case " ", "x", "X":
 			if m.todo.Cursor == -1 {
 				return m, nil
 			}
