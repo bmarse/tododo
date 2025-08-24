@@ -53,11 +53,18 @@ func TaskUI(t *tl.Task, cursor string) string {
 	return fmt.Sprintf("%s %s %s\n", cursor, checkbox, taskText)
 }
 
-func MenuUI() string {
-	return "↑/↓: Move  a: Add  <space>: Complete  t: Toggle Hidden  e: Edit  d: Delete  w: Write  q: Quit"
+func MenuUI(hideCommandMenu bool) string {
+	if hideCommandMenu {
+		return faint.Render("Press '?'")
+	}
+
+	menu := "↑/↓: Move  a: Add  <space>: Complete n/m: Reposition\n"
+	menu += "w: Write  e: Edit  d: Delete \n"
+	menu += "t: Toggle Hidden  q: Quit  ?: Hide Menu"
+	return faint.Render(menu)
 }
 
-func MainUI(todo *tl.Todo, saving bool, spinner string) string {
+func MainUI(todo *tl.Todo, saving bool, spinner string, hideCommandMenu bool) string {
 	s := randomMessage()
 	s += "\n\n"
 	tasks := ""
@@ -83,7 +90,7 @@ func MainUI(todo *tl.Todo, saving bool, spinner string) string {
 	}
 
 	s += "\n\n"
-	s += MenuUI()
+	s += MenuUI(hideCommandMenu)
 	return padded.Render(s)
 }
 

@@ -21,6 +21,20 @@ func (t *Todo) RemoveTask(index int) {
 	t.Tasks = append(t.Tasks[:index], t.Tasks[index+1:]...)
 }
 
+func (t *Todo) Move(up bool) {
+	if up {
+		if t.Cursor != 0 {
+			t.Cursor--
+			t.Tasks[t.Cursor], t.Tasks[t.Cursor+1] = t.Tasks[t.Cursor+1], t.Tasks[t.Cursor]
+		}
+	} else {
+		if t.Cursor != len(t.Tasks)-1 {
+			t.Cursor++
+			t.Tasks[t.Cursor], t.Tasks[t.Cursor-1] = t.Tasks[t.Cursor-1], t.Tasks[t.Cursor]
+		}
+	}
+}
+
 func (t *Todo) ModulateCursor(amount int) {
 	newPosition := t.Cursor + amount
 	newPosition = t.ConvertToValidCursor(newPosition)

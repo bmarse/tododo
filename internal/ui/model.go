@@ -49,20 +49,22 @@ func InitialModel(todoFilename string) (*Model, error) {
 	s.Spinner = spinner.MiniDot
 
 	return &Model{
-		todo:    todolist,
-		input:   ti,
-		spinner: s,
+		todo:            todolist,
+		input:           ti,
+		spinner:         s,
+		hideCommandMenu: true,
 	}, nil
 }
 
 type Model struct {
-	todo       tl.Todo
-	input      textinput.Model
-	spinner    spinner.Model
-	adding     bool
-	saving     bool
-	danceParty bool
-	colorIndex int
+	todo            tl.Todo
+	input           textinput.Model
+	spinner         spinner.Model
+	adding          bool
+	saving          bool
+	danceParty      bool
+	colorIndex      int
+	hideCommandMenu bool
 }
 
 func (m Model) Init() tea.Cmd {
@@ -128,6 +130,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "t":
 			m.todo.ToggleHidden()
 			m.todo.ModulateCursor(0)
+		case "n":
+			m.todo.Move(true)
+		case "m":
+			m.todo.Move(false)
 		case "w":
 			m.saving = true
 			if err := tl.SaveTodo(m.todo); err != nil {
@@ -142,6 +148,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.todo.ModulateCursor(0)
 		case "/":
 			m.danceParty = !m.danceParty
+		case "?":
+			m.hideCommandMenu = !m.hideCommandMenu
 		}
 	}
 	return m, nil
@@ -156,5 +164,5 @@ func (m Model) View() string {
 	if m.danceParty {
 		s = standard.Render("               ✯•´*¨`*•✿ Dance Party ✿•*`¨*•✯\n")
 	}
-	return s + MainUI(&m.todo, m.saving, m.spinner.View())
+	return s + MainUI(&m.todo, m.saving, m.spinner.View(), m.hideCommandMenu)
 }
