@@ -3,7 +3,8 @@ Tododo is a TUI todo manager that should be extinct.  It was created because I w
 
 Tododo uses a markdown file to store its todo data and is meant to be very barebones.  By default it uses `.tododo.md` but you can supply any filename you desire.  The keybindings are easy to use and always in view if you forget(See screenshots below).
 
-![tododo](https://github.com/user-attachments/assets/fa484b9e-62d6-41c5-ac2a-1f5b390a427b)
+![tododo](https://github.com/user-attachments/assets/a9d1d60f-5b94-4628-9729-92c78f6de7db)
+
 
 ## Features
 - Keyboard based
@@ -29,6 +30,44 @@ tododo --help  # Help
 tododo --version # Get the version, needed for opening issues
 ```
 
+## CLI HLEP
+```
+$ tododo --help
+
+ ..   Tododo                                 
+, Õ   help I'm trapped in a todo list factory
+ //_---_                                     
+ \  V   )                                    
+  ------                                     
+
+NAME:
+   tododo - The todo manager that should be extinct
+
+USAGE:
+   tododo [options] FILE
+
+   FILE is the file we will use to store and load todos.
+
+VERSION:
+   brew-v0.6.0-stable
+
+GLOBAL OPTIONS:
+   --help, -h     show help
+   --version, -v  print the version
+
+KEY COMMANDS:
+    ↑/↓ (j/k): Move the cursor up and down to the next task
+    a: Add a new task to your todo list
+    <space> (x): Mark the selected task as completed or not completed
+    n/m: Move the selected task up or down in the list
+    d: Delete the selected task from your todo list
+    w (ctrl+s): Save your current todo list to the provided file
+    e: Edit the text of the selected task
+    t: Show or hide completed tasks in your todo list
+    q (ctrl+c): Exit the application
+    ?: Show or hide this help menu
+```
+
 ## Building with Go
 This is a very complex project with lots complicated dependencies.
 ```
@@ -47,7 +86,9 @@ go install github.com/bmarse/tododo@latest
 Included are some screenshots of tododo running on [Ghostty](https://ghostty.org/) with [Nerd Fonts](https://www.nerdfonts.com/).
 
 ### Main TUI
-<img width="912" height="657" alt="mainTUI" src="https://github.com/user-attachments/assets/3e5c1b12-95f8-4c10-b855-eee8ae3f3219" />
+<img width="1096" height="755" alt="tododo-main" src="https://github.com/user-attachments/assets/79309923-566c-4d2f-9394-7e8648193502" />
 
 ### Adding/editing Task TUI
-<img width="912" height="657" alt="MainTUI-edit" src="https://github.com/user-attachments/assets/49a1ccfc-6ab6-4044-8f88-12cba4a8f89b" />
+<img width="1052" height="711" alt="tododo-add-task" src="https://github.com/user-attachments/assets/df040f81-a595-4a30-b804-42af3952639b" />
+
+
