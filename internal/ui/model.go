@@ -135,9 +135,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.todo.ToggleHidden()
 			m.todo.ModulateCursor(0)
 		case "n", "N":
-			m.todo.Move(true)
+			m.todo.Reposition(true)
 		case "m", "M":
-			m.todo.Move(false)
+			m.todo.Reposition(false)
 		case "w", "W", "ctrl+s":
 			m.saving = true
 			if err := tl.SaveTodo(m.todo); err != nil {
