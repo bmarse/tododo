@@ -30,7 +30,7 @@ tododo --help  # Help
 tododo --version # Get the version, needed for opening issues
 ```
 
-## CLI HLEP
+## CLI Help
 ```
 $ tododo --help
 
