@@ -3,6 +3,7 @@ package todo
 
 // Todo represents a collection of tasks that can be managed.
 type Todo struct {
+	Name     string
 	Tasks    []*Task
 	Cursor   int
 	Hidden   bool
