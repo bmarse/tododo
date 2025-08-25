@@ -37,12 +37,13 @@ func SaveTodo(todo Todo) error {
 	return nil
 }
 
+var checkRegex = regexp.MustCompile(`^\s*\[[ xX]\]\s*`)
+
 func processListNode(node ast.Node, source []byte, depth int) []*Task {
 	// We only support one level of indentation for tasks
 	if depth >= 2 {
 		return []*Task{}
 	}
-	checkRegex := regexp.MustCompile(`^\s*\[[ xX]\]\s*`)
 	tasks := []*Task{}
 
 	if node.Kind() == ast.KindList {
