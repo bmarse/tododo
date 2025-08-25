@@ -95,7 +95,7 @@ func TestGetRemainingTaskCount(t *testing.T) {
 
 func TestAddTask(t *testing.T) {
 	todo := &Todo{Tasks: []*Task{}, Cursor: 0}
-	todo.AddTask("New Task")
+	todo.AddTask("New Task", 0)
 	if len(todo.Tasks) != 1 || todo.Tasks[0].Text != "New Task" {
 		t.Errorf("expected 1 task with text 'New Task', got %d tasks", len(todo.Tasks))
 	}

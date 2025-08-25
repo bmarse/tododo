@@ -1,6 +1,8 @@
 // Package todo manages the state of the actual todo list.
 package todo
 
+import "slices"
+
 // Todo represents a collection of tasks that can be managed.
 type Todo struct {
 	Name     string
@@ -153,12 +155,15 @@ func (t *Todo) GetRemainingTaskCount() int {
 	return count
 }
 
-func (t *Todo) AddTask(text string) {
+func (t *Todo) AddTask(text string, index int) {
+	if index < 0 || index >= len(t.Tasks) {
+		index = len(t.Tasks)
+	}
 	newTask := &Task{
 		Text:    text,
 		Checked: false,
 	}
-	t.Tasks = append(t.Tasks, newTask)
+	t.Tasks = slices.Insert(t.Tasks, index, newTask)
 }
 
 // Task is a single task in a Todo list.

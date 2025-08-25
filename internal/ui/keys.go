@@ -11,7 +11,7 @@ func GetKeys() []KeyCommand {
 	return []KeyCommand{
 		{
 			"↑/↓",
-			"j/k",
+			"k/j",
 			"Move",
 			"Move the cursor up and down to the next task",
 		},
@@ -52,7 +52,7 @@ func GetKeys() []KeyCommand {
 			"Edit the text of the selected task",
 		},
 		{
-			"n/m",
+			"m/n",
 			"",
 			"Reposition Task",
 			"Move the selected task up or down in the list",

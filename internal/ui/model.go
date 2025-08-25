@@ -93,9 +93,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				if strings.TrimSpace(m.input.Value()) == "" {
 					break
 				}
-				if m.todo.Cursor == -1 {
-					m.todo.AddTask(m.input.Value())
-					m.todo.Cursor = len(m.todo.Tasks) - 1
+				if m.todo.Cursor < 0 {
+					m.todo.AddTask(m.input.Value(), m.todo.Cursor*-1)
+					m.todo.Cursor *= -1
 				} else {
 					m.todo.Tasks[m.todo.Cursor].UpdateText(m.input.Value())
 				}
@@ -122,7 +122,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.todo.ModulateCursor(-1)
 		case "a", "A":
 			m.adding = true
-			m.todo.Cursor = -1
+			m.todo.Cursor *= -1
+			if m.todo.Cursor == 0 {
+				m.todo.Cursor = -1
+			}
 		case "e", "E":
 			if m.todo.Cursor == -1 {
 				return m, nil
@@ -135,9 +138,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.todo.ToggleHidden()
 			m.todo.ModulateCursor(0)
 		case "n", "N":
-			m.todo.Reposition(true)
-		case "m", "M":
 			m.todo.Reposition(false)
+		case "m", "M":
+			m.todo.Reposition(true)
 		case "w", "W", "ctrl+s":
 			m.saving = true
 			if err := tl.SaveTodo(m.todo); err != nil {
