@@ -32,13 +32,12 @@ tododo --version # Get the version, needed for opening issues
 
 ## CLI Help
 ```
-$ tododo --help
-
- ..   Tododo                                 
-, Õ   help I'm trapped in a todo list factory
- //_---_                                     
- \  V   )                                    
-  ------                                     
+╰─$ tododo --help
+ ..   Tododo
+, Õ   tasks are like socks, they always seem to multiply
+ //_---_
+ \  V   )
+  ------
 
 NAME:
    tododo - The todo manager that should be extinct
@@ -49,20 +48,21 @@ USAGE:
    FILE is the file we will use to store and load todos.
 
 VERSION:
-   brew-v0.6.0-stable
+   brew-v0.7.0-stable
 
 GLOBAL OPTIONS:
    --help, -h     show help
    --version, -v  print the version
 
 KEY COMMANDS:
-    ↑/↓ (j/k): Move the cursor up and down to the next task
+    ↑/↓ (k/j): Move the cursor up and down to the next task
     a: Add a new task to your todo list
     <space> (x): Mark the selected task as completed or not completed
-    n/m: Move the selected task up or down in the list
     d: Delete the selected task from your todo list
     w (ctrl+s): Save your current todo list to the provided file
+    <tab>: Toggle the indentation level of the selected task
     e: Edit the text of the selected task
+    m/n: Move the selected task up or down in the list
     t: Show or hide completed tasks in your todo list
     q (ctrl+c): Exit the application
     ?: Show or hide this help menu
