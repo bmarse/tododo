@@ -28,12 +28,6 @@ func GetKeys() []KeyCommand {
 			"Mark the selected task as completed or not completed",
 		},
 		{
-			"n/m",
-			"",
-			"Reposition Task",
-			"Move the selected task up or down in the list",
-		},
-		{
 			"d",
 			"",
 			"Delete Task",
@@ -46,10 +40,22 @@ func GetKeys() []KeyCommand {
 			"Save your current todo list to the provided file",
 		},
 		{
+			"<tab>",
+			"",
+			"Toggle Indent",
+			"Toggle the indentation level of the selected task",
+		},
+		{
 			"e",
 			"",
 			"Edit Task",
 			"Edit the text of the selected task",
+		},
+		{
+			"n/m",
+			"",
+			"Reposition Task",
+			"Move the selected task up or down in the list",
 		},
 		{
 			"t",

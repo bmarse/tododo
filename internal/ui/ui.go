@@ -50,7 +50,11 @@ func TaskUI(t *tl.Task, cursor string) string {
 		taskText = faint.Render(taskText)
 	}
 	checkbox := standard.Render(fmt.Sprintf("[%s]:", checked))
-	return fmt.Sprintf("%s %s %s\n", cursor, checkbox, taskText)
+	padding := ""
+	if t.Depth != 0 {
+		padding = strings.Repeat("     ", t.Depth)
+	}
+	return fmt.Sprintf("%s%s %s %s\n", padding, cursor, checkbox, taskText)
 }
 
 func MenuUI(hideCommandMenu bool) string {
@@ -81,7 +85,7 @@ func MainUI(todo *tl.Todo, saving bool, spinner string, hideCommandMenu bool) st
 		tasks += "Yippee! No tasks to do..."
 	}
 	for i, t := range todo.Tasks {
-		if todo.Hidden && t.Checked {
+		if todo.IsCurrentTaskHidden(i) {
 			continue
 		}
 		cursor := " " // no cursor

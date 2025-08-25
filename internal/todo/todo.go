@@ -9,6 +9,61 @@ type Todo struct {
 	Filename string
 }
 
+func (t *Todo) IsCurrentTaskHidden(index int) bool {
+	if index < 0 || index >= len(t.Tasks) {
+		return false
+	}
+	task := t.Tasks[index]
+
+	hidden := t.Hidden && task.Checked
+	if !hidden {
+		return false
+	}
+
+	if hidden && task.Depth > 0 {
+		return true
+	}
+
+	for i := index + 1; i < len(t.Tasks); i++ {
+		if t.Tasks[i].Depth == 0 {
+			return true
+		}
+		if !t.Tasks[i].Checked {
+			return false
+		}
+	}
+
+	return hidden
+}
+
+func (t *Todo) IsCurrentTaskChecked() bool {
+	if len(t.Tasks) == 0 || t.Cursor < 0 || t.Cursor >= len(t.Tasks) {
+		return false
+	}
+
+	return t.Tasks[t.Cursor].Checked
+}
+
+func (t *Todo) checkForOrphanIndents() {
+	oprhan := true
+	for _, task := range t.Tasks {
+		if task.Depth == 0 {
+			oprhan = false
+			continue
+		}
+
+		if task.Depth > 0 && oprhan {
+			task.Depth = 0
+			return
+		}
+	}
+}
+
+func (t *Todo) ToggleIndent() {
+	t.Tasks[t.Cursor].ToggleIndent()
+	t.checkForOrphanIndents()
+}
+
 func (t *Todo) ToggleHidden() {
 	t.Hidden = !t.Hidden
 }
@@ -19,6 +74,7 @@ func (t *Todo) RemoveTask(index int) {
 	}
 
 	t.Tasks = append(t.Tasks[:index], t.Tasks[index+1:]...)
+	t.checkForOrphanIndents()
 }
 
 func (t *Todo) Reposition(up bool) {
@@ -41,6 +97,8 @@ func (t *Todo) Reposition(up bool) {
 			}
 		}
 	}
+
+	t.checkForOrphanIndents()
 }
 
 func (t *Todo) ModulateCursor(amount int) {
@@ -106,6 +164,7 @@ func (t *Todo) AddTask(text string) {
 type Task struct {
 	Text    string
 	Checked bool
+	Depth   int
 }
 
 func (t *Task) UpdateText(text string) {
@@ -114,4 +173,8 @@ func (t *Task) UpdateText(text string) {
 
 func (t *Task) ToggleChecked() {
 	t.Checked = !t.Checked
+}
+
+func (t *Task) ToggleIndent() {
+	t.Depth ^= 1
 }

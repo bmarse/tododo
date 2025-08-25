@@ -144,6 +144,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				log.Fatal(err)
 			}
 			return m, tickCmd
+		case "tab":
+			m.todo.ToggleIndent()
 		case " ", "x", "X":
 			if m.todo.Cursor == -1 {
 				return m, nil
