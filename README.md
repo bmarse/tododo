@@ -17,10 +17,10 @@ Tododo uses a markdown file to store its todo data and is meant to be very bareb
 ## Brew Install
 ```
 # Install
-brew install bmarse/tododo/tododo
+brew install bmarse/tap/tododo
 
 # Upgrade
-brew upgrade bmarse/tododo/tododo
+brew upgrade bmarse/tap/tododo
 ```
 
 ## Usage
